@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班級常規與自律培養模擬器</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .chalkboard {
+            background-color: #1e3f20;
+            border: 12px solid #8b5a2b;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 15px -3px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white py-4 px-6 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <!-- SVG Icon -->
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-wider">班級常規與自律培養模擬器</h1>
+            </div>
+            <div class="text-sm bg-emerald-800 px-3 py-1 rounded-full text-emerald-100">
+                常規貫徹與自律內化
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl w-full mx-auto p-4 flex-grow flex flex-col justify-center">
+        
+        <!-- ==================== 1. START SCREEN ==================== -->
+        <div id="start-screen" class="bg-white rounded-2xl shadow-xl p-6 md:p-10 max-w-2xl mx-auto w-full transition-all duration-300">
+            <div class="text-center mb-8">
+                <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest px-3 py-1 bg-emerald-50 rounded-full">SIMULATION GAME</span>
+                <h2 class="text-3xl font-extrabold mt-3 mb-4 text-gray-900">常規的貫徹，自律的起點</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    真正的自律並非天生，而是透過教師<b>認真、一致且溫和堅定地執行常規邊界</b>，讓學生在安全與可預測的秩序中，將「每日的習慣」逐步<b>內化為內在責任感</b>。
+                </p>
+            </div>
+
+            <!-- Button directly starts simulation without input fields -->
+            <div class="space-y-6">
+                <button onclick="startGameDirectly()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-lg">
+                    進入教室開始模擬 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== 3. MAIN SIMULATOR SCREEN ==================== -->
+        <div id="simulator-screen" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left & Center: Blackboard and Scenario Panel -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Virtual Chalkboard Status -->
+                <div class="chalkboard rounded-xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute top-2 right-4 text-xs text-gray-400 font-mono tracking-wider">ROOM 302</div>
+                    <h3 class="text-lg font-bold border-b border-dashed border-emerald-800 pb-2 mb-4 text-emerald-200">
+                        🏫 <span id="display-teacher-name">林老師</span> 的班級日誌
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-emerald-300">班級狀態：</p>
+                            <h4 id="class-avatar-text" class="text-2xl font-bold mt-1 text-white">😊 班級充滿期待的氛圍</h4>
+                            <p class="text-xs text-gray-300 mt-2" id="class-status-desc">學期剛開始，大家都試著摸索你這導師執行常規的決心與界線...</p>
+                        </div>
+                        <div class="bg-black/20 p-3 rounded-lg border border-white/5">
+                            <span class="text-xs text-emerald-300 font-bold">📢 今日常規小語：</span>
+                            <p class="text-xs text-gray-200 mt-1 italic" id="chalk-quote">「當規則被認真且持續地捍衛，它才能轉化為學生的安全感與自發習慣。」</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario Card -->
+                <div id="scenario-card" class="bg-white rounded-2xl shadow-xl p-6 relative transition-all duration-300 border border-gray-100">
+                    <!-- Progress Bar inside Card -->
+                    <div class="w-full bg-gray-100 h-1.5 rounded-full mb-6 overflow-hidden">
+                        <div id="scenario-progress" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-300" style="width: 16.6%;"></div>
+                    </div>
+
+                    <!-- Question Header -->
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="scenario-badge" class="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-full">情境 1/6</span>
+                        <span class="text-sm text-gray-500" id="scenario-category">核心常規：早自修經營</span>
+                    </div>
+
+                    <!-- Question text -->
+                    <h3 id="scenario-title" class="text-xl font-bold text-gray-900 mb-4 leading-snug">
+                        載入中...
+                    </h3>
+
+                    <!-- Visual helper / Illustration description if applicable -->
+                    <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100 mb-6 flex items-start gap-2 text-sm text-blue-800" id="scenario-hint">
+                        <span>💡</span>
+                        <p>載入中...</p>
+                    </div>
+
+                    <!-- Options list -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options will be injected by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Interactive Explanation Card (Hidden initially, shown after submitting an answer) -->
+                <div id="feedback-card" class="hidden bg-gradient-to-br from-gray-50 to-emerald-50/20 rounded-2xl shadow-lg p-6 border-2 border-emerald-500/30 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-emerald-100 rounded-xl text-emerald-700 shrink-0" id="feedback-icon">
+                            🧠
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-lg text-emerald-900" id="feedback-title">教育學堂：溫和堅定的教育實踐</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed" id="feedback-text">
+                                建立視覺化晨間程序清單能讓孩子在無人指揮下自主運轉。研究指出，「自主掌控感」能大幅提升自律程度。
+                            </p>
+                            <div class="flex flex-wrap gap-2 pt-2" id="metric-feedback-badges">
+                                <!-- Status changes badges will go here -->
+                            </div>
+                            <button onclick="nextStep()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-lg text-sm transition-all shadow hover:shadow-md">
+                                前往下一題 👉
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Sidebar: Stats Dashboard & Student Roster -->
+            <div class="space-y-6">
+                <!-- Stat Dashboard -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2 flex items-center justify-between">
+                        📊 班級四大指標 
+                        <span class="text-xs text-gray-400 font-normal">指標範圍：0 - 100</span>
+                    </h3>
+
+                    <!-- Metric Bars -->
+                    <div class="space-y-5">
+                        <!-- Order -->
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-semibold flex items-center gap-1.5">
+                                    <span>🛡️</span> 班級秩序 (Order)
+                                </span>
+                                <span id="val-order" class="font-bold text-indigo-600">50%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                                <div id="bar-order" class="bg-indigo-500 h-full transition-all duration-500" style="width: 50%;"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-400" id="desc-order">常規運轉效率與秩序的穩定度。</span>
+                        </div>
+
+                        <!-- Autonomy -->
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-semibold flex items-center gap-1.5">
+                                    <span>🧠</span> 學生自律 (Autonomy)
+                                </span>
+                                <span id="val-discipline" class="font-bold text-emerald-600">50%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                                <div id="bar-discipline" class="bg-emerald-500 h-full transition-all duration-500" style="width: 50%;"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-400" id="desc-discipline">學生內化程度：無教師監控時的自我主動性。</span>
+                        </div>
+
+                        <!-- Relationship -->
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-semibold flex items-center gap-1.5">
+                                    <span>❤️</span> 師生關係 (Relationship)
+                                </span>
+                                <span id="val-relationship" class="font-bold text-rose-600">50%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                                <div id="bar-relationship" class="bg-rose-500 h-full transition-all duration-500" style="width: 50%;"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-400" id="desc-relationship">學生與你之間的信任、安全感與合理界線。</span>
+                        </div>
+
+                        <!-- Energy -->
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-semibold flex items-center gap-1.5">
+                                    <span>⚡</span> 教師能量 (Energy)
+                                </span>
+                                <span id="val-energy" class="font-bold text-amber-600">70%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                                <div id="bar-energy" class="bg-amber-500 h-full transition-all duration-500" style="width: 70%;"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-400" id="desc-energy">導師心力值：執行不帶情緒的常規需要強大心理能量。</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Virtual Classroom View (Interactive elements displaying current class vibe) -->
+                <div class="bg-white rounded-2xl shadow-xl p-5 border border-gray-100">
+                    <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-1.5">
+                        👥 學生內化狀態側寫
+                    </h4>
+                    <!-- Roster Representation -->
+                    <div class="grid grid-cols-4 gap-3 text-center" id="student-grid">
+                        <div class="p-2 rounded-lg bg-gray-50 flex flex-col items-center">
+                            <span class="text-2xl" id="avatar-s1">😐</span>
+                            <span class="text-[10px] text-gray-500 font-semibold mt-1">小明 (試探界線)</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gray-50 flex flex-col items-center">
+                            <span class="text-2xl" id="avatar-s2">🗣️</span>
+                            <span class="text-[10px] text-gray-500 font-semibold mt-1">阿華 (隨性而為)</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gray-50 flex flex-col items-center">
+                            <span class="text-2xl" id="avatar-s3">📝</span>
+                            <span class="text-[10px] text-gray-500 font-semibold mt-1">小美 (習慣養成)</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gray-50 flex flex-col items-center">
+                            <span class="text-2xl" id="avatar-s4">🫣</span>
+                            <span class="text-[10px] text-gray-500 font-semibold mt-1">大雄 (邊緣遊走)</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t text-xs text-gray-500 flex items-center justify-between">
+                        <span>💡 自律高：習慣已內化成直覺</span>
+                        <span>秩序高：規則執行精確</span>
+                    </div>
+                </div>
+
+                <!-- Theory Cheat Sheet Trigger -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
+                    <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-1">習慣內化核心</h5>
+                    <p class="text-xs text-emerald-900 leading-relaxed">
+                        「當規則執行不隨情緒起伏、不隨個人好惡打折，它就會在大腦中發展出自動化行為鏈，使自律取代他律。」
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== 4. EVALUATION REPORT SCREEN ==================== -->
+        <div id="report-screen" class="hidden bg-white rounded-2xl shadow-xl p-6 md:p-10 max-w-4xl mx-auto w-full transition-all duration-300">
+            <!-- Header of the report -->
+            <div class="text-center mb-8 border-b pb-6">
+                <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest px-3 py-1 bg-emerald-50 rounded-full">SIMULATION ANALYSIS REPORT</span>
+                <h2 class="text-3xl font-extrabold mt-3 text-gray-900" id="report-teacher-title">林老師 的常規貫徹與內化成果分析</h2>
+                <p class="text-gray-500 mt-2">根據你在6大關鍵執行情境中的選擇，你的常規執行強度與自律內化指數已出爐！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Metrics summary box -->
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100 flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-gray-700 text-sm mb-3">🏆 最終班級成就數值</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">🛡️ 班級秩序：</span>
+                                <span id="final-order" class="font-bold text-lg text-indigo-600">80%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">🧠 學生自律：</span>
+                                <span id="final-discipline" class="font-bold text-lg text-emerald-600">75%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">❤️ 師生關係：</span>
+                                <span id="final-relationship" class="font-bold text-lg text-rose-600">85%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">⚡ 教師能量：</span>
+                                <span id="final-energy" class="font-bold text-lg text-amber-600">60%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-200">
+                        <span class="text-xs text-gray-400 block">綜合平均自律內化力：</span>
+                        <span id="overall-index" class="text-xl font-black text-gray-800">優秀 (82/100)</span>
+                    </div>
+                </div>
+
+                <!-- Classroom Management Style Archetype -->
+                <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-xl p-5 shadow-lg md:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] bg-emerald-800/80 text-emerald-100 px-2 py-0.5 rounded-full font-bold">班級經營流派</span>
+                        <h3 class="text-2xl font-black mt-2 mb-3 flex items-center gap-2">
+                            <span id="style-emoji">🤝</span> <span id="style-name">溫和而堅定的自律領路人</span>
+                        </h3>
+                        <p class="text-sm text-emerald-100 leading-relaxed" id="style-desc">
+                            你擅長將自律化為班級日常運作的催化劑。你明白真正的紀律是來自學生內心的自主選擇，而不是畏懼懲罰或追求獎勵。你總是能為混亂建立穩定的結構（常規），並在溫暖和關懷中堅守底線。
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-emerald-500/30 text-xs text-emerald-200">
+                        💡 符合詹姆斯·克利爾的原子習慣養成、阿德勒正向管教「溫和與堅定」的執行理論。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Action Plan & Diagnosis -->
+            <div class="bg-emerald-50/50 rounded-xl p-6 border border-emerald-100 mb-8">
+                <h4 class="font-bold text-emerald-900 mb-4 flex items-center gap-2 text-lg">
+                    <span>📝</span> 專屬你的自律培育與常規執行方案
+                </h4>
+                <div class="space-y-4 text-sm text-emerald-950" id="report-suggestions">
+                    <!-- Dynamic suggestions injected by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Detailed Questions Breakdown Grid -->
+            <div class="mb-8">
+                <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2 text-lg">
+                    <span>🔍</span> 六大核心情境抉責回顧
+                </h4>
+                <div class="space-y-3" id="choices-breakdown">
+                    <!-- List of choice-by-choice diagnostics -->
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="resetGame()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3.5 rounded-xl transition text-center shadow-sm">
+                    重新挑戰模擬 🔄
+                </button>
+                <button onclick="shareResult()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition text-center shadow">
+                    複製成果診斷 (分享與探討) 📋
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Info -->
+    <footer class="bg-gray-100 border-t border-gray-200 py-4 px-6 text-center text-xs text-gray-500">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>© 2026 班級常規與自律模擬系統 - 適合中小學教師、師資培育生專業研習與班級經營推廣</span>
+            <span>「常規是骨架，關懷是血肉，自律是靈魂。」</span>
+        </div>
+    </footer>
+
+    <!-- Custom Modal for Notifications (No alert browser guardrail) -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl transform scale-95 transition-all">
+            <h3 class="text-lg font-bold text-gray-900 mb-2" id="modal-title">通知</h3>
+            <p class="text-sm text-gray-600 mb-6" id="modal-message">內容</p>
+            <button onclick="closeModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition">
+                確定
+            </button>
+        </div>
+    </div>
+
+    <!-- Simulation Logic in JS -->
+    <script>
+        // State variables
+        let state = {
+            teacherName: "林老師",
+            metrics: {
+                order: 50,
+                discipline: 50,
+                relationship: 50,
+                energy: 70
+            },
+            currentStep: 1, // Step 1 to 6 corresponding to scenario 1 to 6
+            choicesHistory: [] // To trace selected answers
+        };
+
+        // Scenarios Database (Focusing on execution and internalization)
+        const scenarios = [
+            {
+                id: 1,
+                category: "習慣的建立：早自修「行為提示與反射」",
+                title: "開學第二週，早自修「交完作業立即開啟無聲閱讀」的常規已宣佈。然而，今天大雄和阿華一邊交作業，一邊聊天，甚至在教室走道開始丟紙團測試你的底線。其他學生都在看你怎麼處理。你如何「認真執行」常規，讓其內化為習慣？",
+                hint: "建立習慣的第一步是讓學生明白：規則一經制定就是一條不可隨意調整的「絕對邊界」，必須不打折扣地執行，直到在大腦固化成直覺。",
+                options: [
+                    {
+                        text: "【溫和而堅定地重新啟動程序】不帶情緒地叫停大雄與阿華，引導他們回到座位：「我們約定好的早自修程序（Routine）是什麼？請重新走一遍交作業、安靜拿出書本的步驟。」直到兩人都正確完成，方才點頭微笑以示鼓勵。",
+                        effects: { order: 15, discipline: 20, relationship: 10, energy: -10 },
+                        explanation: "【認真執行與習慣重構】你沒有怒吼，也沒有放任，而是要求學生「重新實踐正確程序」。這種無情緒、高原則的重複要求，能向全班表明規則是一條認真存在的界線，有助於大腦將正確程序內化為反射行為。",
+                        scoreCategory: "warm-demanding"
+                    },
+                    {
+                        text: "【強效威嚇維持當下秩序】一怒之下重擊講台，大聲喝斥：「大雄、阿華，你們把老師的話當耳邊風嗎？每人去後面罰站，並抄寫班規三遍！其他人看什麼看，手放桌上，不准發出聲音！」",
+                        effects: { order: 25, discipline: -10, relationship: -20, energy: -15 },
+                        explanation: "【權威高控制服從】此舉確實能靠恐懼獲得當下的安靜。然而，學生此時只會學會「老師在時要害怕服從」，而非建立內在的「習慣認同」。一旦你不在，常規就會崩塌，根本無法內化。",
+                        scoreCategory: "strict"
+                    },
+                    {
+                        text: "【嫌麻煩或因心軟而放水】心想大雄他們剛開學定力不足，不願破壞早晨的和諧。你走過去幫忙撿起紙團，笑笑說：「好了，別玩了，趕快回位子看書吧。」接著便忙於自己的行政工作。",
+                        effects: { order: -20, discipline: -15, relationship: 5, energy: 15 },
+                        explanation: "【妥協與縱容】這傳遞了「常規不用認真執行，老師不會堅持到底」的潛在暗示。這會徹底破壞常規的信譽，大腦無法建立對習慣程序的敬畏，自律行為胎死腹中。",
+                        scoreCategory: "permissive"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                category: "規則的堅守：小組討論的「微調檢核」",
+                title: "分組討論進行到一半，教室分貝開始失控。你發現有一組根本沒有討論課業，而是全組興奮地聊起線上遊戲，甚至大聲推搡。這顯然違背了討論前約定的「2級耳語常規（Group Routine）」。你該如何貫徹這條常規？",
+                hint: "當常規被打破，如果老師不採取行動「認真修正」，大腦就會迅速將「吵鬧」默認為新常規。執行的關鍵是讓學生主動調整，而非由老師大吼維持。",
+                options: [
+                    {
+                        text: "【啟動無聲提示與引導自評】走到該組旁，比出約定的「音量修正」手勢（Cue）。請各組停下討論10秒，請該組學生對照黑板的「討論常規表」自我評估現在的音量。確認他們理解後，低聲說：「請繼續討論。我相信你們這組能管好自己的音量。」",
+                        effects: { order: 15, discipline: 20, relationship: 15, energy: -5 },
+                        explanation: "【提示與自我控制的內化】不當眾羞辱，而是引導其「對照標準並自我修正」。你堅持了音量的界線，並提供其轉變為自我調控（Self-regulation）的機會，有效建立學生對規則的掌控力。",
+                        scoreCategory: "warm-demanding"
+                    },
+                    {
+                        text: "【直接剝奪討論權利】吹哨打斷全班，憤怒宣告：「既然你們不珍惜討論的自由，討論時間提早結束！大家坐回原位，接下來一律改由我板書授課，吵鬧的小組今天的討論分數直接扣5分！」",
+                        effects: { order: 20, discipline: -5, relationship: -15, energy: -5 },
+                        explanation: "【剝奪式外在處罰】利用威權直接剝奪討論權，雖然教室能瞬間恢复安靜，但學生會將「遵守常規」與「倒楣、不情願」扣連，產生反感與對抗心理，這完全切斷了自發性自律的發展。",
+                        scoreCategory: "strict"
+                    },
+                    {
+                        text: "【不介入並任其發展】心想分組吵鬧是正常的，懶得一次次介入提醒。只在講台上大喊了幾聲：「大家稍微小聲一點討論喔！」隨後繼續滑手機或做其他事，即使學生依然在大吵大鬧。",
+                        effects: { order: -25, discipline: -15, relationship: 5, energy: 10 },
+                        explanation: "【放任式的常規懈怠】這等於將決定權完全讓渡給混亂。當學生發現「說一套、做一套」是班上的常態，討論常規將徹底瓦解，常規執行度的歸零會使接下來的所有常規都失去公信力。",
+                        scoreCategory: "permissive"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                category: "合理後果執行：面對常態性作業拖延",
+                title: "作業繳交截止，小明跑來辦公室，擺出可憐的表情對你說：「林老師，我昨天忘記把作業放進書包了，這堂課能不能先別登記我缺交？我保證明天一定帶來！」之前他已經用過兩次相同的藉口。你該如何貫徹作業常規？",
+                hint: "內化自律需要讓學生承擔「行為的合理後果（Logical Consequences）」。認真執行後果，不是為了懲罰，而是讓孩子明白規則的嚴肅性，建立因果聯結。",
+                options: [
+                    {
+                        text: "【溫和地執行約定後果】不帶憤怒地回應：「小明，老師很遺憾你忘了帶。依照我們的規定，今天午休時間需要請你來辦公室補寫一份相同的作業。這是為了確保你的學習進度，而非處罰。老師會在辦公室陪你完成。」",
+                        effects: { order: 10, discipline: 25, relationship: 15, energy: -15 },
+                        explanation: "【執行後果與同理陪伴】認真且毫不妥協地執行預先約定好的合理後果，並提供無指責的同理陪伴。這能讓小明深刻體會到「沒寫作業＝必須用自由時間補上」，藉由行為與後果的直接聯結，內化為「為自己行為負責」的自律心態。",
+                        scoreCategory: "warm-demanding"
+                    },
+                    {
+                        text: "【嚴厲痛罵並當眾羞辱】大發雷霆：「又是這個藉口！你以為老師很好騙嗎？你就是懶惰！今天放學留校、記警告一次，寫悔過書。我要立刻打電話叫你媽媽來學校！」",
+                        effects: { order: 20, discipline: -5, relationship: -15, energy: -20 },
+                        explanation: "【嚴苛處罰與羞辱】高壓懲罰激發的是學生的求生（說謊、找更好的藉口）與怨恨，而非自律. 學生會把焦點放在「老師太狠了、媽媽太煩了」，完全避開了對自身行為的責任反思與內化。",
+                        scoreCategory: "strict"
+                    },
+                    {
+                        text: "【無原則通融以維護面子關係】心軟並表示：「好吧，最後一次喔！明天一定要帶來，不然我就真的要登記你了。」結果明天小明依然沒有帶來，並嬉皮笑臉地打哈哈過去。",
+                        effects: { order: -15, discipline: -25, relationship: 10, energy: 15 },
+                        explanation: "【妥協縱容】妥協雖然讓當下關係顯得很「溫暖、寬容」，實則是推遲了孩子社會化的過程。學生會學到「規則是可以透過撒嬌、欺騙來突破的漏洞」，規則毫無權威，自律就無從談起。",
+                        scoreCategory: "permissive"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                category: "勞動價值的內化：打掃常規的「驗收堅持」",
+                title: "打掃時間即將結束，大雄負責的拖地區域依然污漬處處。他隨便敷衍地把拖把一扔，轉身背起書包準備排隊放學。當你叫住他，他有些不耐煩地說：「老師，我已經拖過了啊，差不多就好了啦，大家都想回家了。」你該如何堅持驗收？",
+                hint: "自律也包含對「工作品質與公共責任」的自我要求。如果教師每次在驗收時「得過且過」，學生就會學會敷衍與推諉；唯有堅持不懈的驗收，才能把乾淨的標準刻進大腦。",
+                options: [
+                    {
+                        text: "【溫和重申乾淨標準並要求重做】不生氣地帶他走到未乾淨處，指出標準：「大雄，我們的打掃常規約定是：污漬完全消失才算完成。請重新將這兩塊磁磚拖乾淨。雖然大家都想回家，但做好自己的責任是我們放學的前提。老師陪著你，請動手吧。」",
+                        effects: { order: 15, discipline: 20, relationship: 15, energy: -10 },
+                        explanation: "【堅持乾淨標準的執行】教師「認真執行驗收常規」是孩子養成責任感最好的磨刀石。當學生發現敷衍並不能減少工作量（反而要重做），「把事情一次做好」的習慣與內在責任感便會隨著每次的重做慢慢深植大腦。",
+                        scoreCategory: "warm-demanding"
+                    },
+                    {
+                        text: "【當眾大吼、連坐處罰】大罵：「地拖得跟泥巴一樣！這叫拖過了嗎？不准回家！全班都留下來陪他，今天全部人都晚五分鐘放學，讓他拖到我滿意為止！」",
+                        effects: { order: 20, discipline: -10, relationship: -20, energy: -5 },
+                        explanation: "【高壓與連坐威壓】利用全班排擠的壓力逼大雄屈服，空間敵意急升，更會讓學生將「打掃」視為一種可恨的刑罰。在這種仇恨與被迫的氛圍中，絕無可能發展出尊重環境的內在自律。",
+                        scoreCategory: "strict"
+                    },
+                    {
+                        text: "【妥協代勞或隨便放行】看時間確實很晚了，心想放學排隊卡住很麻煩。對大雄說：「唉，算了，你走吧。明天掃乾淨一點。」隨後你自己默默拿起拖把幫大雄把地拖乾淨。",
+                        effects: { order: -10, discipline: -20, relationship: 5, energy: -10 },
+                        explanation: "【代勞與常規放水】老師代勞 or 隨便放行，向全班學生展示了最壞的範本：「只要態度夠無賴、夠拖延，老師最後就會放過我，甚至幫我做完。」這會讓敷衍心態在全班迅速蔓延。",
+                        scoreCategory: "permissive"
+                    }
+                ]
+            },
+            {
+                id: 5,
+                category: "自控力的內化：課堂數位誘惑的「規則履行」",
+                title: "上課時，你發現大雄將書包擋在課桌前，偷偷在底下用手機玩遊戲，這已嚴重違反當初全班大會通過的「上課手機一律在停機坪充電」常規。你走過去時，他將手機藏在腿下，哀求說：「老師，我這堂課保證不玩了！讓我自己收著就好，求求你不要沒收！」你如何應對？",
+                hint: "課堂手機常規是最容易鬆動的雷區。認真執行的價值，在於提供學生一個「物理性與心理性」的強硬屏障，幫助他們在溫和的氣氛中，練習克服強大誘惑，落實自主約定。",
+                options: [
+                    {
+                        text: "【堅定落實手機歸位約定】溫和微笑但伸出手：「大雄，依照我們共同的約定，上課時間手機一律放在停機坪。請現在拿起來放回停機坪。我們每個人都要履行自己的諾言。請動手吧。」站在他身旁，耐心、堅持且不容質疑地等待他將手機歸位。",
+                        effects: { order: 15, discipline: 20, relationship: 20, energy: -5 },
+                        explanation: "【捍衛承諾與物理屏蔽】不與他討價還價，也不帶任何責備色彩，只是溫和但「絕對認真地堅持讓手機歸位」。大雄雖然不情願，但明白這條常規毫無通融餘地。這種日復一日的堅守，能實質幫助學生克服成癮，內化為上課專注與尊重誓言的深層自律。",
+                        scoreCategory: "warm-demanding"
+                    },
+                    {
+                        text: "【當眾沒收並高調訓斥】粗暴地搶走他大腿底下的手機，塞進自己的口袋，大吼：「上課竟然敢完手機，還敢跟老師頂嘴！手機沒收一個月！下課給我去辦公室寫警告，明天把你爸叫來領回去！」",
+                        effects: { order: 25, discipline: -10, relationship: -25, energy: -10 },
+                        explanation: "【侵入式處罰與破壞師生關係】當眾搶走沒收手機，雖然成功阻絕了當下的違規，但粗暴與公然羞辱會引發強烈的「逆反心理」。大雄與班上學生會將防堵手機視為「貓捉老鼠」的戰爭，下一次只會藏得更隱密，無法內化任何自控精神。",
+                        scoreCategory: "strict"
+                    },
+                    {
+                        text: "【選擇相信並給予無底線通融】心軟退讓，對大雄低聲說：「好吧，看在你這堂課表現還不錯的份上，你自己收好，絕對不可以再拿出來喔。老師相信你的自律。」接著便走回講台繼續上課。",
+                        effects: { order: -20, discipline: -25, relationship: -5, energy: 15 },
+                        explanation: "【特例放水與規則崩盤】這是一次災難性的執行。這證明了「共同承諾的班規是可以隨意被特例打破的漏洞」。這會引起其他乖乖放手機同學的強烈不平衡感，班規名存實亡，自控力退化為投機取巧。",
+                        scoreCategory: "permissive"
+                    }
+                ]
+            },
+            {
+                id: 6,
+                category: "責任與後果：面對學生「屢教不改」的邊界測試",
+                title: "學期中段，大雄依然常常隨意插嘴、干擾他人上課。你已多次私下提醒並討論，甚至共同簽署了「課堂自律契約」。今天他在其他組發表時，再度出言嘲諷打斷課堂。當你走過去，他嬉皮笑臉地說：「老師，我又不是故意的，就原諒我一次嘛！」此時，你如何執行他屢犯不改的最終責任與合理後果？",
+                hint: "屢犯不改是常規的終極試金石。如果此時不執行合理後果，先前積累的所有常規信任將會徹底瓦解。執行的秘訣在於「冷靜履行契約」，讓學生意識到每一次選擇都有對應且不可逃避的責任代價。",
+                options: [
+                    {
+                        text: "【不帶情緒，貫徹履行自律契約的後果】平靜地看著他，緩緩說道：「大雄，我們在自律契約中共同約定，第三次插嘴的合理後果是暫時移至『冷靜重整區』完成反思單，並在下課前向被干擾的同學道歉、討論明日改進計畫。請現在帶上筆走過去，老師下課後會過去看你。」",
+                        effects: { order: 20, discipline: 25, relationship: 10, energy: -5 },
+                        explanation: "【冷靜履行後果與責任重整】你不指責、不說教、不動怒，只是平靜且絕對認真地要求他履行契約中自己承諾的合理後果。這種「無情緒的堅守」能給予學生最高強度的秩序安全感，阿德勒理論指出：當孩子看見自己的行為後果如地心引力般必然、卻又充滿尊重時，內在自律才會真正醒覺與內化。",
+                        scoreCategory: "warm-demanding"
+                    },
+                    {
+                        text: "【情緒爆發，施加非因果性的重罰】拍桌大怒，當眾訓斥：「大雄，你這個害群之馬！老師到底講過幾百次了？你根本就是存心搗亂！現在給我滾去外面罰站到放學，下週的班級同樂會你不用參加了，並且記小過一次，叫你爸媽明天立刻來學校見我！」",
+                        effects: { order: 25, discipline: -5, relationship: -20, energy: -20 },
+                        explanation: "【威權重罰與情緒失控】當你以憤怒與非關聯性罰則（如罰站至放學、不准參加同樂會）處罰時，大雄只會感到被老師「不公迫害」，激發報復心理。這破壞了合理因果的內化，更極大耗損你的教師能量。",
+                        scoreCategory: "strict"
+                    },
+                    {
+                        text: "【無奈妥協，再度給予無底線寬容】嘆了一口氣，疲憊地說：「大雄，你真的很讓老師失望。每次答應的事情都做不到……唉，算了，你這次先乖乖坐好，老師再相信你最後一次。拜託你接下來不要再插嘴，好嗎？」然後無奈地繼續講課。",
+                        effects: { order: -20, discipline: -25, relationship: 5, energy: 15 },
+                        explanation: "【無效勸說與規則破產】這在全班面前證明了你的「自律契約」與口頭邊界是可以輕易被耍賴和裝無辜打破的軟線。屢犯不改卻能毫無代價逃脫，全班守規矩的孩子會深感不公，集體自律風氣也將徹底淪喪。",
+                        scoreCategory: "permissive"
+                    }
+                ]
+            }
+        ];
+
+        // Style tracker setup
+        let styleScores = {
+            "warm-demanding": 0,
+            "strict": 0,
+            "permissive": 0
+        };
+
+        // Functions to transition screens
+        function showScreen(screenId) {
+            const screens = ['start-screen', 'simulator-screen', 'report-screen'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Action when Start Game Directly is pressed (bypassing onboarding config)
+        function startGameDirectly() {
+            state.teacherName = "林老師"; // Default name to simplify onboarding
+            
+            // Set default baseline metrics directly
+            state.metrics = {
+                order: 50,
+                discipline: 50,
+                relationship: 55,
+                energy: 70
+            };
+
+            styleScores = {
+                "warm-demanding": 0,
+                "strict": 0,
+                "permissive": 0
+            };
+
+            // Set teacher name on chalkboard
+            document.getElementById('display-teacher-name').innerText = state.teacherName;
+
+            // Setup and launch the first scenario
+            state.currentStep = 1;
+            loadScenario(0);
+            updateDashboard();
+
+            showScreen('simulator-screen');
+        }
+
+        function capMetrics() {
+            for (let m in state.metrics) {
+                state.metrics[m] = Math.max(0, Math.min(100, state.metrics[m]));
+            }
+        }
+
+        function loadScenario(index) {
+            const sc = scenarios[index];
+            
+            const pct = ((index + 1) / scenarios.length) * 100;
+            document.getElementById('scenario-progress').style.width = `${pct}%`;
+            document.getElementById('scenario-badge').innerText = `情境 ${index + 1}/${scenarios.length}`;
+            document.getElementById('scenario-category').innerText = sc.category;
+            document.getElementById('scenario-title').innerText = sc.title;
+            document.getElementById('scenario-hint').innerHTML = `<span>💡</span><p>${sc.hint}</p>`;
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+
+            sc.options.forEach((opt, idx) => {
+                const optButton = document.createElement('div');
+                optButton.className = "flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50/10 cursor-pointer transition-all duration-200 shadow-sm hover:shadow active:scale-[0.99]";
+                optButton.onclick = () => selectOption(index, idx);
+                optButton.innerHTML = `
+                    <div class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold shrink-0 mt-0.5">
+                        ${String.fromCharCode(65 + idx)}
+                    </div>
+                    <div class="text-sm font-medium text-gray-700 leading-relaxed">${opt.text}</div>
+                `;
+                optContainer.appendChild(optButton);
+            });
+
+            document.getElementById('feedback-card').classList.add('hidden');
+        }
+
+        function selectOption(scIndex, optIndex) {
+            const optContainer = document.getElementById('options-container');
+            Array.from(optContainer.children).forEach(child => {
+                child.onclick = null;
+                child.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+
+            const sc = scenarios[scIndex];
+            const opt = sc.options[optIndex];
+
+            state.choicesHistory.push({
+                scenarioId: sc.id,
+                category: sc.category,
+                selectedOptionText: opt.text,
+                explanation: opt.explanation,
+                styleCategory: opt.scoreCategory
+            });
+
+            styleScores[opt.scoreCategory]++;
+
+            for (let key in opt.effects) {
+                state.metrics[key] += opt.effects[key];
+            }
+            capMetrics();
+
+            updateDashboard();
+
+            const feedbackCard = document.getElementById('feedback-card');
+            const feedbackText = document.getElementById('feedback-text');
+            const metricBadges = document.getElementById('metric-feedback-badges');
+
+            feedbackText.innerText = opt.explanation;
+            
+            metricBadges.innerHTML = '';
+            for (let key in opt.effects) {
+                const val = opt.effects[key];
+                const sign = val >= 0 ? '+' : '';
+                const color = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                const labelMap = { order: '🛡️ 秩序', discipline: '🧠 自律', relationship: '❤️ 關係', energy: '⚡ 能量' };
+                
+                const badge = document.createElement('span');
+                badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full border ${color}`;
+                badge.innerText = `${labelMap[key]} ${sign}${val}%`;
+                metricBadges.appendChild(badge);
+            }
+
+            feedbackCard.classList.remove('hidden');
+            feedbackCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function nextStep() {
+            if (state.currentStep < scenarios.length) {
+                state.currentStep++;
+                loadScenario(state.currentStep - 1);
+            } else {
+                buildReport();
+            }
+        }
+
+        function updateDashboard() {
+            document.getElementById('val-order').innerText = `${state.metrics.order}%`;
+            document.getElementById('val-discipline').innerText = `${state.metrics.discipline}%`;
+            document.getElementById('val-relationship').innerText = `${state.metrics.relationship}%`;
+            document.getElementById('val-energy').innerText = `${state.metrics.energy}%`;
+
+            document.getElementById('bar-order').style.width = `${state.metrics.order}%`;
+            document.getElementById('bar-discipline').style.width = `${state.metrics.discipline}%`;
+            document.getElementById('bar-relationship').style.width = `${state.metrics.relationship}%`;
+            document.getElementById('bar-energy').style.width = `${state.metrics.energy}%`;
+
+            const avatarTxt = document.getElementById('class-avatar-text');
+            const statusDesc = document.getElementById('class-status-desc');
+            const quotes = document.getElementById('chalk-quote');
+
+            const s1 = document.getElementById('avatar-s1');
+            const s2 = document.getElementById('avatar-s2');
+            const s3 = document.getElementById('avatar-s3');
+            const s4 = document.getElementById('avatar-s4');
+
+            // Set student dynamic reactions
+            if (state.metrics.discipline > 70) {
+                s1.innerText = "🤩";
+                s2.innerText = "🙋‍♂️";
+                s3.innerText = "🕵️‍♀️";
+                s4.innerText = "💪";
+            } else if (state.metrics.order < 40) {
+                s1.innerText = "🥱";
+                s2.innerText = "🗣️";
+                s3.innerText = "🫣";
+                s4.innerText = "📴";
+            } else {
+                s1.innerText = "😐";
+                s2.innerText = "🗣️";
+                s3.innerText = "📝";
+                s4.innerText = "🫣";
+            }
+
+            if (state.metrics.order >= 75 && state.metrics.discipline >= 70) {
+                avatarTxt.innerText = "🌟 習慣根深蒂固的自律班級！";
+                statusDesc.innerText = "習慣的力量在此完美顯現！藉由你對常規無情緒、無例外的認真執行，學生大腦已經將這些程序化為「不假思索的身體記憶」，即使導師不在，班級也能自動高效運轉。";
+                quotes.innerText = "「真正的自律是由外在堅定的邊界，在重複的日常實踐中，不知不覺烙印進靈魂的習慣。」";
+            } else if (state.metrics.order >= 75 && state.metrics.discipline < 50) {
+                avatarTxt.innerText = "⚖️ 秩序井然但缺乏內在認同";
+                statusDesc.innerText = "教室非常安靜、無人敢違規。然而這只是高壓威脅下的「表面順從（Compliance）」，學生尚未把常規視為自我責任。一旦失去你的監視，常規會立刻崩解。";
+                quotes.innerText = "「靠恐懼與懲罰建立的秩序，只是老師的自我陶醉，無法培養學生自發性的內在責任感。」";
+            } else if (state.metrics.order < 45 && state.metrics.relationship >= 70) {
+                avatarTxt.innerText = "🥳 溫慢打鬧但規則名存實亡";
+                statusDesc.innerText = "學生們非常喜愛你，但因為你時常妥協、放水或怕破壞關係，導致班上的常規常被學生以撒嬌或試探而打破。缺乏一致性的界線，讓學生無法建立持久的自我控制習慣。";
+                quotes.innerText = "「溫和如果缺乏了對規則的『堅持與執行』，那不叫尊重，叫放棄對孩子的社會化培養。」";
+            } else if (state.metrics.energy < 30) {
+                avatarTxt.innerText = "😩 導師能量耗竭邊緣";
+                statusDesc.innerText = "因為你在執行常規時常伴隨巨大的情緒（憤怒、說教），這使得班級經營極度耗損你的精力。你需要轉換成「不帶情緒、溫和但百分之百貫徹」的執行方式。";
+                quotes.innerText = "「認真執行不是靠吼叫，而是像地心引力一樣：無聲、溫和，但永遠在那裡，無法逃避。」";
+            } else {
+                avatarTxt.innerText = "🙂 班級常規習慣奠基中";
+                statusDesc.innerText = "學生仍在透過每次事件，測試你的常規是不是「說真的」。堅持你的每一次驗收與合理後果執行，直到這些步驟成為他們大腦中的自發習慣。";
+                quotes.innerText = "「堅持至少21天。每一次對底線的溫和捍衛，都是在向孩子的大腦刻寫自律習慣。」";
+            }
+        }
+
+        function buildReport() {
+            showScreen('report-screen');
+
+            document.getElementById('report-teacher-title').innerText = `${state.teacherName} 的常規貫徹與內化成果分析`;
+            document.getElementById('final-order').innerText = `${state.metrics.order}%`;
+            document.getElementById('final-discipline').innerText = `${state.metrics.discipline}%`;
+            document.getElementById('final-relationship').innerText = `${state.metrics.relationship}%`;
+            document.getElementById('final-energy').innerText = `${state.metrics.energy}%`;
+
+            const avgScore = Math.round((state.metrics.order + state.metrics.discipline + state.metrics.relationship) / 3);
+            let rating = "";
+            if (avgScore >= 80) rating = `特優卓越 (${avgScore}/100)`;
+            else if (avgScore >= 65) rating = `優異穩健 (${avgScore}/100)`;
+            else if (avgScore >= 50) rating = `尚可需微調 (${avgScore}/100)`;
+            else rating = `面臨瓶頸與重組期 (${avgScore}/100)`;
+            
+            document.getElementById('overall-index').innerText = rating;
+
+            let primaryStyle = "warm-demanding";
+            let maxScore = styleScores["warm-demanding"];
+
+            if (styleScores["strict"] > maxScore) {
+                primaryStyle = "strict";
+                maxScore = styleScores["strict"];
+            }
+            if (styleScores["permissive"] > maxScore) {
+                primaryStyle = "permissive";
+            }
+
+            const styleEmoji = document.getElementById('style-emoji');
+            const styleName = document.getElementById('style-name');
+            const styleDesc = document.getElementById('style-desc');
+            const suggContainer = document.getElementById('report-suggestions');
+
+            suggContainer.innerHTML = '';
+
+            if (primaryStyle === "warm-demanding") {
+                styleEmoji.innerText = "🤝";
+                styleName.innerText = "溫和而堅定的自律領路人";
+                styleDesc.innerText = "你是典型的高支持、高期待（Authoritative）導師。你深諳「認真執行」並不是凶狠與大吼，而是靠不帶情緒的一致性堅守。你總是把「常規」轉化為每日重複實踐的「微習慣（Habit Loop）」，並用陪伴與合理後果代替無效處罰。這使你的學生不僅能在高度安全的界線中感到自在，更把遵守規矩、自我負責深深內化成大腦的自動行為。";
+                
+                suggContainer.innerHTML = `
+                    <div class="flex gap-2">
+                        <span class="text-emerald-700 font-bold">✓</span>
+                        <p><strong>優化自動化日常：</strong>你目前的一致性執行非常卓越。建議可以進一步將管理責任遞減（Fading），引導學生擔任常規的主動維護者，讓自律轉化為班級自治的文化。</p>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <span class="text-emerald-700 font-bold">✓</span>
+                        <p><strong>維持自我能量：</strong>不帶情緒地執行常規（Emotional Neutrality）需要穩定的自我心靈。請繼續維持這種像『地心引力』般的無聲堅持，它是最省力且最高效的經營之道。</p>
+                    </div>
+                `;
+            } else if (primaryStyle === "strict") {
+                styleEmoji.innerText = "⚖️";
+                styleName.innerText = "秩序至上的鐵腕指揮官";
+                styleDesc.innerText = "你是典型的高控制、低支持（Authoritarian）經營者。你的班級非常安靜、守時、高效。然而，目前的秩序多半是建立在學生因「害怕受罰」而產生的被迫順從。學生在你的高壓之下，大腦運作的是「逃避痛苦」的防衛機制，而非內化自我責任. 一旦失去你的監視，他們的自控能力將瞬間歸零，並可能伴隨著破壞性的逆反行為。";
+
+                suggContainer.innerHTML = `
+                    <div class="flex gap-2">
+                        <span class="text-amber-800 font-bold">⚠️</span>
+                        <p><strong>用「程序與後果」代替「恐懼與怒火」：</strong>嘗試降低言詞的攻擊性與大聲斥責。當學生違規時，溫和地請他重新實踐正確程序（例如重新安靜走進教室三次），這能將情緒對立轉化為純粹的行為習慣訓練。</p>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <span class="text-amber-800 font-bold">⚠️</span>
+                        <p><strong>建立有溫度的合理後果：</strong>當學生遲交作業時，不帶評判地請他午休補上（合理後果），並在旁靜靜陪伴。這種不帶羞辱的「執行」，能讓學生學會為選擇負責，而非對老師心懷怨恨。</p>
+                    </div>
+                `;
+            } else {
+                styleEmoji.innerText = "🌱";
+                styleName.innerText = "自由放任的暖心觀察家";
+                styleDesc.innerText = "你是典型的高支持、低控制（Permissive）教育者。你對學生極具包容心、溫暖且充滿愛，但因為你害怕關係破裂、嫌介入麻煩或因為一時的心軟，導致你對常規常「雷聲大雨點小、說到卻沒做到」。當學生發現你的常規是一條隨時可以揉捏、退讓的軟線，他們就不會認真執行，常規自然無法內化成任何自律習慣。";
+
+                suggContainer.innerHTML = `
+                    <div class="flex gap-2">
+                        <span class="text-amber-800 font-bold">⚠️</span>
+                        <p><strong>溫和不等於「不認真執行」：</strong>你必須明白，學生需要清晰且雷打不動的邊界（Boundary）才能獲得心理安全感。請挑選2項核心規則（例如：上課鐘響歸位、手機入停機坪），下定決心不帶情緒、百分之百貫徹執行，絕對不通融、不放水。</p>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <span class="text-amber-800 font-bold">⚠️</span>
+                        <p><strong>克制特例妥協：</strong>當學生用藉口試探底線時，用溫暖的語調重申底線：「老師理解你今天很累，但規則就是規則，我們每個人都要對承諾負責。」當你的不放水成為固定日常，自律習慣才會真正發芽。</p>
+                    </div>
+                `;
+            }
+
+            const breakdown = document.getElementById('choices-breakdown');
+            breakdown.innerHTML = '';
+
+            state.choicesHistory.forEach((item, index) => {
+                const styleLabels = { "warm-demanding": "溫和堅定/貫徹執行 🤝", "strict": "鐵腕高控/恐懼服從 ⚖️", "permissive": "妥協放鬆/放水通融 🌱" };
+                const styleColors = { 
+                    "warm-demanding": "bg-emerald-50 text-emerald-800 border-emerald-200", 
+                    "strict": "bg-indigo-50 text-indigo-800 border-indigo-200", 
+                    "permissive": "bg-amber-50 text-amber-800 border-amber-200" 
+                };
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "p-4 bg-gray-50 rounded-lg border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3";
+                itemDiv.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">情境 ${index + 1}</span>
+                            <span class="text-sm font-semibold text-gray-900">${item.category}</span>
+                        </div>
+                        <p class="text-xs text-gray-500 italic mt-1">「${item.selectedOptionText.substring(0, 80)}...」</p>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1.5 rounded-full border shrink-0 ${styleColors[item.styleCategory]}">
+                        執行風格：${styleLabels[item.styleCategory]}
+                    </span>
+                `;
+                breakdown.appendChild(itemDiv);
+            });
+        }
+
+        function resetGame() {
+            state = {
+                teacherName: "林老師",
+                metrics: {
+                    order: 50,
+                    discipline: 50,
+                    relationship: 50,
+                    energy: 70
+                },
+                currentStep: 1,
+                choicesHistory: []
+            };
+            styleScores = { "warm-demanding": 0, "strict": 0, "permissive": 0 };
+            showScreen('start-screen');
+        }
+
+        function shareResult() {
+            const avgScore = Math.round((state.metrics.order + state.metrics.discipline + state.metrics.relationship) / 3);
+            const styleName = document.getElementById('style-name').innerText;
+            const textToCopy = `【常規貫徹與自律內化模擬成果】\n教師尊稱：${state.teacherName}\n經營風格：${styleName}\n指標成果：班級秩序 ${state.metrics.order}% | 學生自律 ${state.metrics.discipline}% | 師生關係 ${state.metrics.relationship}%\n綜合自律內化力：${avgScore}/100。\n快來測試你的班規執行力與自律引導流派！`;
+
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showModal("複製成功！", "診斷成果已成功複製到剪貼簿，可以分享給教育同仁 or 研習夥伴囉！");
+                } else {
+                    showModal("複製失敗", "您的瀏覽器不支援自動複製，請手動複製。");
+                }
+            } catch (err) {
+                showModal("複製失敗", "您的瀏覽器不支援自動複製，請手動複製。");
+            }
+            document.body.removeChild(tempTextArea);
+        }
+
+        function showModal(title, msg) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            
+            const modal = document.getElementById('custom-modal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
